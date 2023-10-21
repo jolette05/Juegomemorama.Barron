@@ -11,9 +11,9 @@ using System.Windows.Forms;
 namespace Juegomemorama.Barron
 {
     public partial class Form1 : Form
-       
+
     {
-       
+
         // firstClicked points to the first Label control 
         // that the player clicks, but it will be null 
         // if the player hasn't clicked a label yet
@@ -37,8 +37,7 @@ namespace Juegomemorama.Barron
         /// Assign each icon from the list of icons to a random square
         /// </summary>
         private void AssignIconsToSquares()
-        {   try
-            { 
+        {
             // The TableLayoutPanel has 16 labels,
             // and the icon list has 16 icons,
             // so an icon is pulled at random from the list
@@ -50,14 +49,11 @@ namespace Juegomemorama.Barron
                 {
                     int randomNumber = random.Next(icons.Count);
                     iconLabel.Text = icons[randomNumber];
-                    // iconLabel.ForeColor = iconLabel.BackColor;
+                    iconLabel.ForeColor = iconLabel.BackColor;
                     icons.RemoveAt(randomNumber);
-                } 
                 }
-            } catch
-            {
-                MessageBox.Show("Huboo un error lo siento ");
             }
+
         }
         public Form1()
         {
@@ -67,51 +63,72 @@ namespace Juegomemorama.Barron
         }
         private void label1_Click(object sender, EventArgs e)
         {
+
             if (timer1.Enabled == true)
                 return;
+
             Label clickedLabel = sender as Label;
 
             if (clickedLabel != null)
             {
-
-                // If the clicked label is black, the player clicked
-                // an icon that's already been revealed --
-                // ignore the click
                 if (clickedLabel.ForeColor == Color.Black)
                     return;
-
-                // If firstClicked is null, this is the first icon 
-                // in the pair that the player clicked,
-                // so set firstClicked to the label that the player 
-                // clicked, change its color to black, and return
                 if (firstClicked == null)
                 {
                     firstClicked = clickedLabel;
                     firstClicked.ForeColor = Color.Black;
-
                     return;
-
                 }
-                // running and firstClicked isn't null,
-                // so this must be the second icon the player clicked
-                // Set its color to black
                 secondClicked = clickedLabel;
                 secondClicked.ForeColor = Color.Black;
-                // If the player clicked two matching icons, keep them 
-                // black and reset firstClicked and secondClicked 
-                // so the player can click another icon
+
                 CheckForWinner();
+
                 if (firstClicked.Text == secondClicked.Text)
                 {
                     firstClicked = null;
                     secondClicked = null;
                     return;
                 }
+                MessageBox.Show("No lograste encontrar los pares ", "Sorry");
 
-                // If the player gets this far, the player 
-                // clicked two different icons, so start the 
-                // timer (which will wait three quarters of 
-                // a second, and then hide the icons)
+                timer1.Start();
+            }
+        }
+
+
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+
+
+            Label clickedLabel = sender as Label;
+
+            if (clickedLabel != null)
+            {
+                // If the clicked label is black, the player clicked
+                // an icon that's already been revealed --
+                // ignore the click
+                if (clickedLabel.ForeColor == Color.Black)
+                    return;
+
+                // If firstClicked is null, this is the first icon
+                // in the pair that the player clicked, 
+                // so set firstClicked to the label that the player 
+                // clicked, change its color to black, and return
+                if (firstClicked == null)
+                {
+                    firstClicked = clickedLabel;
+                    firstClicked.ForeColor = Color.Black;
+                    return;
+                }
+
+                // If the player gets this far, the timer isn't
+                // running and firstClicked isn't null,
+                // so this must be the second icon the player clicked
+                // Set its color to black
+                secondClicked = clickedLabel;
+                secondClicked.ForeColor = Color.Black;
 
                 // If the player gets this far, the player 
                 // clicked two different icons, so start the 
@@ -123,59 +140,50 @@ namespace Juegomemorama.Barron
 
 
 
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            // Stop the timer
-            timer1.Stop();
-
-            // Hide both icons
-            firstClicked.ForeColor = firstClicked.BackColor;
-            secondClicked.ForeColor = secondClicked.BackColor;
-
-            // Reset firstClicked and secondClicked 
-            // so the next time a label is
-            // clicked, the program knows it's the first click
-            firstClicked = null;
-            secondClicked = null;
-        }
-        /// <summary>
-        /// Check every icon to see if it is matched, by 
-        /// comparing its foreground color to its background color. 
-        /// If all of the icons are matched, the player wins
-        /// </summary>
         private void CheckForWinner()
         {
-            try
+
+            // Go through all of the labels in the TableLayoutPanel, 
+            // checking each one to see if its icon is matched
+            foreach (Control control in tableLayoutPanel1.Controls)
             {
-                // Go through all of the labels in the TableLayoutPanel, 
-                // checking each one to see if its icon is matched
-                foreach (Control control in tableLayoutPanel1.Controls)
+                Label iconLabel = control as Label;
+
+                if (iconLabel != null)
                 {
-                    Label iconLabel = control as Label;
-
-                    if (iconLabel != null)
-                    {
-                        if (iconLabel.ForeColor == iconLabel.BackColor)
-                            return;
-                    }
+                    if (iconLabel.ForeColor == iconLabel.BackColor)
+                        return;
                 }
+             
+            }
 
-                // If the loop didn’t return, it didn't find
-                // any unmatched icons
-                // That means the user won. Show a message and close the form
-                MessageBox.Show("You matched all the icons!", "Congratulations");
-                Close();
-            }
-            catch
-            {
-                MessageBox.Show(" Lo siento vuelve a intentarlo,", "Perdiste");
-            }
+            // If the loop didn’t return, it didn't find
+            // any unmatched icons
+            // That means the user won. Show a message and close the form
+            MessageBox.Show("Haz econtrado todos los pares!", "Felicidades");
+            Close();
+
+           
+
+
         }
-        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+
+        private void salirToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Application.Exit();
         }
- 
 
-       
+        private void reglasToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Reglas login = new Reglas();
+            login.Show();
+            Hide();
+        }
     }
-}
+
+
+
+
+
+        }
+
